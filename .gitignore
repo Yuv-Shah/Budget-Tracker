@@ -1,0 +1,21 @@
+
+# Gradle caches
+.gradle/
+
+# Build outputs
+**/build/
+
+# Local Android SDK configuration
+local.properties
+
+# Android Studio settings
+.idea/
+*.iml
+
+# Native build artifacts
+.externalNativeBuild/
+.cxx/
+
+# Operating system files
+.DS_Store
+Thumbs.db
