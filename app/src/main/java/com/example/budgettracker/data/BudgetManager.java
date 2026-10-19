@@ -7,7 +7,7 @@ import java.util.List;
 
 public class BudgetManager {
     private static BudgetManager instance;
-    private List<Budget> budgets;
+    private final List<Budget> budgets;
     private double overallLimit;
 
     private BudgetManager() {
@@ -25,6 +25,7 @@ public class BudgetManager {
         return instance;
     }
 
+    @SuppressWarnings("unused")
     public List<Budget> getBudgets() {
         return budgets;
     }

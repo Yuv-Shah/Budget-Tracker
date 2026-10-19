@@ -1,12 +1,12 @@
 package com.example.budgettracker.model;
 
 public class Transaction {
-    private String title;
-    private String category;
-    private String accountName;
-    private double amount;
-    private boolean isIncome;
-    private String date;
+    private final String title;
+    private final String category;
+    private final String accountName;
+    private final double amount;
+    private final boolean isIncome;
+    private final String date;
 
     public Transaction(String title, String category, String accountName, double amount, boolean isIncome, String date) {
         this.title = title;

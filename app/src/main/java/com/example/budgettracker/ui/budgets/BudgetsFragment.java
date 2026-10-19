@@ -18,6 +18,8 @@ import com.example.budgettracker.R;
 import com.example.budgettracker.data.BudgetManager;
 import com.example.budgettracker.data.TransactionManager;
 
+import java.util.Locale;
+
 public class BudgetsFragment extends Fragment {
 
     private TextView tvOverallBudget, tvFoodBudget, tvTransportBudget, tvUtilitiesBudget;
@@ -77,7 +79,7 @@ public class BudgetsFragment extends Fragment {
         double overallLimit = bm.getOverallLimit();
         int overallProgress = overallLimit > 0 ? (int) ((totalSpent / overallLimit) * 100) : 0;
         if (tvOverallBudget != null) {
-            tvOverallBudget.setText(String.format("₹%,.0f / ₹%,.0f", totalSpent, overallLimit));
+            tvOverallBudget.setText(String.format(Locale.getDefault(), "₹%,.0f / ₹%,.0f", totalSpent, overallLimit));
         }
         if (progressBarOverall != null) {
             progressBarOverall.setProgress(Math.min(overallProgress, 100));
@@ -88,7 +90,7 @@ public class BudgetsFragment extends Fragment {
         double foodLimit = bm.getBudgetLimit("Food");
         int foodProgress = foodLimit > 0 ? (int) ((foodSpent / foodLimit) * 100) : 0;
         if (tvFoodBudget != null) {
-            tvFoodBudget.setText(String.format("₹%,.0f / ₹%,.0f", foodSpent, foodLimit));
+            tvFoodBudget.setText(String.format(Locale.getDefault(), "₹%,.0f / ₹%,.0f", foodSpent, foodLimit));
         }
         if (progressBarFood != null) {
             progressBarFood.setProgress(Math.min(foodProgress, 100));
@@ -99,7 +101,7 @@ public class BudgetsFragment extends Fragment {
         double transportLimit = bm.getBudgetLimit("Transport");
         int transportProgress = transportLimit > 0 ? (int) ((transportSpent / transportLimit) * 100) : 0;
         if (tvTransportBudget != null) {
-            tvTransportBudget.setText(String.format("₹%,.0f / ₹%,.0f", transportSpent, transportLimit));
+            tvTransportBudget.setText(String.format(Locale.getDefault(), "₹%,.0f / ₹%,.0f", transportSpent, transportLimit));
         }
         if (progressBarTransport != null) {
             progressBarTransport.setProgress(Math.min(transportProgress, 100));
@@ -110,7 +112,7 @@ public class BudgetsFragment extends Fragment {
         double utilitiesLimit = bm.getBudgetLimit("Utilities");
         int utilitiesProgress = utilitiesLimit > 0 ? (int) ((utilitiesSpent / utilitiesLimit) * 100) : 0;
         if (tvUtilitiesBudget != null) {
-            tvUtilitiesBudget.setText(String.format("₹%,.0f / ₹%,.0f", utilitiesSpent, utilitiesLimit));
+            tvUtilitiesBudget.setText(String.format(Locale.getDefault(), "₹%,.0f / ₹%,.0f", utilitiesSpent, utilitiesLimit));
         }
         if (progressBarUtilities != null) {
             progressBarUtilities.setProgress(Math.min(utilitiesProgress, 100));
@@ -123,7 +125,7 @@ public class BudgetsFragment extends Fragment {
 
         final EditText input = new EditText(requireContext());
         input.setHint("Enter new budget limit");
-        input.setText(String.valueOf((int) currentLimit));
+        input.setText(String.format(Locale.getDefault(), "%d", (int) currentLimit));
         builder.setView(input);
 
         builder.setPositiveButton("Save", (dialog, which) -> {

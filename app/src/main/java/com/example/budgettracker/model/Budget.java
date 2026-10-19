@@ -1,7 +1,7 @@
 package com.example.budgettracker.model;
 
 public class Budget {
-    private String category;
+    private final String category;
     private double limitAmount;
 
     public Budget(String category, double limitAmount) {

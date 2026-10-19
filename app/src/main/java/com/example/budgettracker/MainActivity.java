@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
+            Fragment selectedFragment;
             int itemId = item.getItemId();
             if (itemId == R.id.navigation_dashboard) {
                 selectedFragment = new DashboardFragment();
@@ -39,15 +39,14 @@ public class MainActivity extends AppCompatActivity {
                 selectedFragment = new StatisticsFragment();
             } else if (itemId == R.id.navigation_settings) {
                 selectedFragment = new SettingsFragment();
+            } else {
+                return false;
             }
 
-            if (selectedFragment != null) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.navHostFragment, selectedFragment)
-                        .commit();
-                return true;
-            }
-            return false;
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.navHostFragment, selectedFragment)
+                    .commit();
+            return true;
         });
     }
 }

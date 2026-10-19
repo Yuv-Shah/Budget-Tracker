@@ -26,4 +26,27 @@
     <string name="edit_budget">Edit Monthly Budget</string>
     <string name="enter_budget_limit">Enter new monthly budget limit:</string>
     <string name="budget_spent_format">Spent ₹9,150 of ₹%1$s (65%)</string>
+    <string name="account_hdfc">HDFC Bank</string>
+    <string name="account_cash">Cash</string>
+    <string name="account_credit_card">Credit Card</string>
+    <string name="add_new_transaction">Add New Transaction</string>
+    <string name="title_expenditure_label">Title / Item Bought</string>
+    <string name="title_income_label">Earned From / By Whom and Where</string>
+    <string name="hint_expenditure_title">e.g. Textbooks / Lunch</string>
+    <string name="hint_income_title">e.g. Salary from Company, John for freelancing</string>
+    <string name="tab_expenditure">Expenditure</string>
+    <string name="tab_income">Income</string>
+    <string name="account_type_wallet">Wallet</string>
+    <string name="account_type_credit_card">Credit Card</string>
+    <string-array name="theme_options">
+        <item>Light</item>
+        <item>Dark</item>
+        <item>System Default</item>
+    </string-array>
+    <string-array name="date_range_options">
+        <item>All Time</item>
+        <item>This Month</item>
+        <item>Last Month</item>
+        <item>This Year</item>
+    </string-array>
 </resources>

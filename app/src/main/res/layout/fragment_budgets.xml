@@ -3,22 +3,30 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
-    android:fillViewport="true"
-    android:padding="16dp">
+    android:background="@color/app_background"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="20dp">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <!-- Top Title Bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/title_budgets"
-            android:textColor="?attr/colorOnSurface"
-            android:textSize="24sp"
-            android:textStyle="bold" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/title_budgets"
+                android:textColor="@color/text_primary"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <!-- Overall Budget Card -->
         <com.google.android.material.card.MaterialCardView
@@ -26,42 +34,45 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/primary_green"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp"
+            app:cardBackgroundColor="#092820"
             android:clickable="true"
             android:focusable="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@drawable/bg_hero_card"
                 android:orientation="vertical"
                 android:padding="20dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Total Monthly Budget"
-                    android:textColor="@color/teal_200"
-                    android:textSize="14sp" />
+                    android:text="Overall Budget Limit"
+                    android:textColor="@color/text_on_dark_subtle"
+                    android:textSize="13sp" />
 
                 <TextView
                     android:id="@+id/tvOverallBudget"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="₹15,000 / ₹20,000"
+                    android:text="₹5,950 / ₹20,000"
                     android:textColor="@color/white"
-                    android:textSize="24sp"
+                    android:textSize="26sp"
                     android:textStyle="bold" />
 
                 <ProgressBar
                     android:id="@+id/progressBarOverall"
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="8dp"
-                    android:layout_marginTop="12dp"
-                    android:progress="75" />
+                    android:layout_height="10dp"
+                    android:layout_marginTop="14dp"
+                    android:progress="30"
+                    android:progressDrawable="@drawable/bg_progress_custom" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -71,7 +82,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:text="Category Budgets"
-            android:textColor="?attr/colorOnSurface"
+            android:textColor="@color/text_primary"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -81,40 +92,59 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E2E8F0"
+            app:cardBackgroundColor="@color/card_surface"
             android:clickable="true"
             android:focusable="true">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/bg_circle_purple" />
+
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
                         android:layout_weight="1"
                         android:text="Food &amp; Dining"
-                        android:textColor="?attr/colorOnSurface"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
                         android:textStyle="bold" />
+
                     <TextView
                         android:id="@+id/tvFoodBudget"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="₹4,500 / ₹6,000"
-                        android:textColor="?attr/colorOnSurfaceVariant" />
+                        android:text="₹2,750 / ₹6,000"
+                        android:textColor="@color/pastel_purple_icon"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
+
                 <ProgressBar
                     android:id="@+id/progressBarFood"
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="6dp"
-                    android:layout_marginTop="8dp"
-                    android:progress="75" />
+                    android:layout_height="8dp"
+                    android:layout_marginTop="12dp"
+                    android:progress="46"
+                    android:progressDrawable="@drawable/bg_progress_custom" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -124,40 +154,59 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E2E8F0"
+            app:cardBackgroundColor="@color/card_surface"
             android:clickable="true"
             android:focusable="true">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/bg_circle_blue" />
+
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
                         android:layout_weight="1"
-                        android:text="Transportation"
-                        android:textColor="?attr/colorOnSurface"
+                        android:text="Travelling &amp; Fuel"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
                         android:textStyle="bold" />
+
                     <TextView
                         android:id="@+id/tvTransportBudget"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="₹2,200 / ₹4,000"
-                        android:textColor="?attr/colorOnSurfaceVariant" />
+                        android:text="₹800 / ₹4,000"
+                        android:textColor="@color/pastel_blue_icon"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
+
                 <ProgressBar
                     android:id="@+id/progressBarTransport"
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="6dp"
-                    android:layout_marginTop="8dp"
-                    android:progress="55" />
+                    android:layout_height="8dp"
+                    android:layout_marginTop="12dp"
+                    android:progress="20"
+                    android:progressDrawable="@drawable/bg_progress_custom" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -167,40 +216,59 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="#E2E8F0"
+            app:cardBackgroundColor="@color/card_surface"
             android:clickable="true"
             android:focusable="true">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="16dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
+
+                    <View
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="@drawable/bg_circle_orange" />
+
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
                         android:layout_weight="1"
                         android:text="Utilities &amp; Bills"
-                        android:textColor="?attr/colorOnSurface"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp"
                         android:textStyle="bold" />
+
                     <TextView
                         android:id="@+id/tvUtilitiesBudget"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="₹2,450 / ₹3,000"
-                        android:textColor="?attr/colorOnSurfaceVariant" />
+                        android:text="₹2,400 / ₹3,000"
+                        android:textColor="@color/pastel_orange_icon"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
+
                 <ProgressBar
                     android:id="@+id/progressBarUtilities"
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="6dp"
-                    android:layout_marginTop="8dp"
-                    android:progress="82" />
+                    android:layout_height="8dp"
+                    android:layout_marginTop="12dp"
+                    android:progress="80"
+                    android:progressDrawable="@drawable/bg_progress_custom" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
