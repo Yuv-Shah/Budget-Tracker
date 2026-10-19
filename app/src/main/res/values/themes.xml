@@ -5,5 +5,20 @@
         <item name="colorPrimary">@color/primary_green</item>
         <item name="colorPrimaryDark">@color/primary_green_dark</item>
         <item name="colorAccent">@color/accent_green</item>
+        <item name="android:windowBackground">@color/app_background</item>
+        <item name="android:statusBarColor">@color/header_bg</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="materialAlertDialogTheme">@style/Theme.BudgetTracker.Dialog</item>
+        <item name="alertDialogTheme">@style/Theme.BudgetTracker.Dialog</item>
+    </style>
+
+    <style name="Theme.BudgetTracker.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.BudgetTracker.Dialog</item>
+        <item name="android:background">@drawable/bg_rounded_dialog</item>
+    </style>
+
+    <style name="ShapeAppearance.BudgetTracker.Dialog" parent="ShapeAppearance.Material3.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">24dp</item>
     </style>
 </resources>

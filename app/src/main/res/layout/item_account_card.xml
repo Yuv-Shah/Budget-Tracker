@@ -2,11 +2,14 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardAccount"
-    android:layout_width="160dp"
-    android:layout_height="100dp"
+    android:layout_width="165dp"
+    android:layout_height="125dp"
     android:layout_marginEnd="12dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="2dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="#E2E8F0"
+    app:cardBackgroundColor="@color/pastel_blue_bg"
     android:clickable="true"
     android:focusable="true">
 
@@ -16,12 +19,49 @@
         android:orientation="vertical"
         android:padding="12dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:id="@+id/viewAccountIconBg"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/bg_circle_blue">
+
+                <ImageView
+                    android:id="@+id/ivAccountIcon"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="@string/my_accounts"
+                    android:src="@drawable/ic_bank"
+                    app:tint="@color/pastel_blue_icon" />
+            </FrameLayout>
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="›"
+                android:textColor="@color/text_tertiary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/tvAccountName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="HDFC Bank"
-            android:textColor="?attr/colorOnSurface"
+            android:textColor="@color/text_primary"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -30,21 +70,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Savings"
-            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textColor="@color/text_secondary"
             android:textSize="12sp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
 
         <TextView
             android:id="@+id/tvAccountBalance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="₹28,500"
-            android:textColor="@color/accent_green"
-            android:textSize="16sp"
+            android:layout_marginTop="4dp"
+            android:text="₹8,750.00"
+            android:textColor="@color/pastel_green_icon"
+            android:textSize="15sp"
             android:textStyle="bold" />
 
     </LinearLayout>

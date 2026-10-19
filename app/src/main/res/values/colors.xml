@@ -1,15 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+    <!-- Basic Brand -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="primary_green">#FF2E7D32</color>
-    <color name="primary_green_dark">#FF1B5E20</color>
-    <color name="accent_green">#FF4CAF50</color>
-    <color name="expense_red">#FFD32F2F</color>
-    <color name="income_green">#FF388E3C</color>
+
+    <!-- Primary Green Palette -->
+    <color name="primary_green">#0E3A2F</color>
+    <color name="primary_green_dark">#08241D</color>
+    <color name="accent_green">#10B981</color>
+    <color name="emerald_light">#D1FAE5</color>
+
+    <!-- Header & Hero Cards -->
+    <color name="header_bg">#0E3A2F</color>
+    <color name="hero_card_bg">#092820</color>
+    <color name="hero_card_gradient_start">#0B3026</color>
+    <color name="hero_card_gradient_end">#061E18</color>
+
+    <!-- Pastel Spectrum Palette -->
+    <!-- Green/Mint -->
+    <color name="pastel_green_bg">#ECFDF5</color>
+    <color name="pastel_green_icon_bg">#D1FAE5</color>
+    <color name="pastel_green_icon">#059669</color>
+
+    <!-- Purple/Lavender -->
+    <color name="pastel_purple_bg">#F5F3FF</color>
+    <color name="pastel_purple_icon_bg">#EDE9FE</color>
+    <color name="pastel_purple_icon">#7C3AED</color>
+
+    <!-- Orange/Peach -->
+    <color name="pastel_orange_bg">#FFF7ED</color>
+    <color name="pastel_orange_icon_bg">#FFEDD5</color>
+    <color name="pastel_orange_icon">#EA580C</color>
+
+    <!-- Blue/Sky -->
+    <color name="pastel_blue_bg">#EFF6FF</color>
+    <color name="pastel_blue_icon_bg">#DBEAFE</color>
+    <color name="pastel_blue_icon">#2563EB</color>
+
+    <!-- Red/Coral -->
+    <color name="pastel_red_bg">#FEF2F2</color>
+    <color name="pastel_red_icon_bg">#FEE2E2</color>
+    <color name="pastel_red_icon">#EF4444</color>
+
+    <!-- Yellow/Amber -->
+    <color name="pastel_yellow_bg">#FEFCE8</color>
+    <color name="pastel_yellow_icon_bg">#FEF08A</color>
+    <color name="pastel_yellow_icon">#CA8A04</color>
+
+    <!-- App System Colors -->
+    <color name="app_background">#F4F7F5</color>
+    <color name="card_surface">#FFFFFF</color>
+    <color name="text_primary">#0F172A</color>
+    <color name="text_secondary">#64748B</color>
+    <color name="text_tertiary">#94A3B8</color>
+    <color name="text_on_dark">#FFFFFF</color>
+    <color name="text_on_dark_subtle">#A7F3D0</color>
+    <color name="divider_color">#E2E8F0</color>
+
+    <color name="income_green">#10B981</color>
+    <color name="expense_red">#EF4444</color>
+    <color name="bg_pill_badge_light">#F1F5F9</color>
 </resources>

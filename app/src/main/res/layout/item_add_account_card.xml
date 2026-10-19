@@ -2,11 +2,14 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardAddAccount"
-    android:layout_width="120dp"
-    android:layout_height="100dp"
+    android:layout_width="140dp"
+    android:layout_height="125dp"
     android:layout_marginEnd="12dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="2dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="1.5dp"
+    app:strokeColor="#CBD5E1"
+    app:cardBackgroundColor="@color/card_surface"
     android:clickable="true"
     android:focusable="true">
 
@@ -17,22 +20,36 @@
         android:orientation="vertical"
         android:padding="12dp">
 
+        <FrameLayout
+            android:layout_width="38dp"
+            android:layout_height="38dp"
+            android:background="@drawable/bg_circle_green">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:contentDescription="@string/add_account"
+                android:src="@drawable/ic_plus"
+                app:tint="@color/pastel_green_icon" />
+        </FrameLayout>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/plus_sign"
-            android:textColor="?attr/colorPrimary"
-            android:textSize="32sp"
+            android:layout_marginTop="8dp"
+            android:text="@string/add_account"
+            android:textColor="@color/text_primary"
+            android:textSize="13sp"
             android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/add_account"
-            android:textColor="?attr/colorOnSurface"
-            android:textSize="12sp"
-            android:textStyle="bold" />
+            android:layout_marginTop="2dp"
+            android:text="Link bank / card"
+            android:textColor="@color/text_tertiary"
+            android:textSize="11sp" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

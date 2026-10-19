@@ -7,7 +7,7 @@ import java.util.List;
 
 public class TransactionManager {
     private static TransactionManager instance;
-    private List<Transaction> transactions;
+    private final List<Transaction> transactions;
 
     private TransactionManager() {
         transactions = new ArrayList<>();
@@ -34,23 +34,17 @@ public class TransactionManager {
     }
 
     public double getTotalIncome() {
-        double total = 0;
-        for (Transaction t : transactions) {
-            if (t.isIncome()) {
-                total += t.getAmount();
-            }
-        }
-        return total;
+        return transactions.stream()
+                .filter(Transaction::isIncome)
+                .mapToDouble(Transaction::getAmount)
+                .sum();
     }
 
     public double getTotalExpense() {
-        double total = 0;
-        for (Transaction t : transactions) {
-            if (!t.isIncome()) {
-                total += t.getAmount();
-            }
-        }
-        return total;
+        return transactions.stream()
+                .filter(t -> !t.isIncome())
+                .mapToDouble(Transaction::getAmount)
+                .sum();
     }
 
     public double getTotalBalance() {
@@ -58,26 +52,21 @@ public class TransactionManager {
     }
 
     public double getCategoryExpense(String category) {
-        double total = 0;
-        for (Transaction t : transactions) {
-            if (!t.isIncome() && t.getCategory().equalsIgnoreCase(category)) {
-                total += t.getAmount();
-            }
-        }
-        return total;
+        return transactions.stream()
+                .filter(t -> !t.isIncome() && t.getCategory().equalsIgnoreCase(category))
+                .mapToDouble(Transaction::getAmount)
+                .sum();
     }
 
     public double getAccountBalance(String accountName) {
-        double balance = 10000.0;
-        for (Transaction t : transactions) {
-            if (t.getAccountName().equalsIgnoreCase(accountName)) {
-                if (t.isIncome()) {
-                    balance += t.getAmount();
-                } else {
-                    balance -= t.getAmount();
-                }
-            }
-        }
-        return balance;
+        double income = transactions.stream()
+                .filter(t -> t.getAccountName().equalsIgnoreCase(accountName) && t.isIncome())
+                .mapToDouble(Transaction::getAmount)
+                .sum();
+        double expense = transactions.stream()
+                .filter(t -> t.getAccountName().equalsIgnoreCase(accountName) && !t.isIncome())
+                .mapToDouble(Transaction::getAmount)
+                .sum();
+        return 10000.0 + income - expense;
     }
 }
