@@ -1,21 +1,14 @@
 package com.example.budgettracker.data;
 
+import com.example.budgettracker.BudgetTrackerApp;
 import com.example.budgettracker.model.Budget;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BudgetManager {
     private static BudgetManager instance;
-    private final List<Budget> budgets;
-    private double overallLimit;
 
     private BudgetManager() {
-        budgets = new ArrayList<>();
-        budgets.add(new Budget("Food", 6000.0));
-        budgets.add(new Budget("Transport", 4000.0));
-        budgets.add(new Budget("Utilities", 3000.0));
-        overallLimit = 20000.0;
     }
 
     public static synchronized BudgetManager getInstance() {
@@ -25,35 +18,27 @@ public class BudgetManager {
         return instance;
     }
 
-    @SuppressWarnings("unused")
+    private AppDatabaseHelper getDb() {
+        return AppDatabaseHelper.getInstance(BudgetTrackerApp.getContext());
+    }
+
     public List<Budget> getBudgets() {
-        return budgets;
+        return getDb().getAllBudgets();
     }
 
     public double getOverallLimit() {
-        return overallLimit;
+        return getDb().getOverallLimit();
     }
 
     public void setOverallLimit(double overallLimit) {
-        this.overallLimit = overallLimit;
+        getDb().setOverallLimit(overallLimit);
     }
 
     public void setBudgetLimit(String category, double limit) {
-        for (Budget b : budgets) {
-            if (b.getCategory().equalsIgnoreCase(category)) {
-                b.setLimitAmount(limit);
-                return;
-            }
-        }
-        budgets.add(new Budget(category, limit));
+        getDb().setBudgetLimit(category, limit);
     }
 
     public double getBudgetLimit(String category) {
-        for (Budget b : budgets) {
-            if (b.getCategory().equalsIgnoreCase(category)) {
-                return b.getLimitAmount();
-            }
-        }
-        return 5000.0;
+        return getDb().getBudgetLimit(category);
     }
 }

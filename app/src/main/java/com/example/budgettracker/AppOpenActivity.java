@@ -3,6 +3,7 @@ package com.example.budgettracker;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,17 +18,27 @@ public class AppOpenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_app_open);
+
+        Button btnEnter = findViewById(R.id.btnEnter);
+        if (btnEnter != null) {
+            btnEnter.setOnClickListener(v -> enterMain());
+        }
 
         SharedPreferences prefs = getSharedPreferences("BudgetPrefs", MODE_PRIVATE);
         boolean appLockEnabled = prefs.getBoolean("app_lock_enabled", false);
 
         if (!appLockEnabled) {
-            startActivity(new Intent(AppOpenActivity.this, MainActivity.class));
-            finish();
+            enterMain();
             return;
         }
 
         authenticateAndEnter();
+    }
+
+    private void enterMain() {
+        startActivity(new Intent(AppOpenActivity.this, MainActivity.class));
+        finish();
     }
 
     private void authenticateAndEnter() {
@@ -42,8 +53,7 @@ public class AppOpenActivity extends AppCompatActivity {
             @Override
             public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
-                startActivity(new Intent(AppOpenActivity.this, MainActivity.class));
-                finish();
+                enterMain();
             }
 
             @Override
@@ -61,8 +71,7 @@ public class AppOpenActivity extends AppCompatActivity {
         try {
             biometricPrompt.authenticate(promptInfo);
         } catch (Exception e) {
-            startActivity(new Intent(AppOpenActivity.this, MainActivity.class));
-            finish();
+            enterMain();
         }
     }
 }

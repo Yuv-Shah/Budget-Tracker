@@ -3,12 +3,15 @@ package com.example.budgettracker.ui.dashboard;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,18 +23,22 @@ import androidx.fragment.app.Fragment;
 
 import com.example.budgettracker.EditAccountActivity;
 import com.example.budgettracker.R;
+import com.example.budgettracker.data.AppDatabaseHelper;
 import com.example.budgettracker.data.BudgetManager;
 import com.example.budgettracker.data.TransactionManager;
+import com.example.budgettracker.model.Account;
 import com.example.budgettracker.ui.transactions.TransactionDialogHelper;
+import com.example.budgettracker.utils.CurrencyUtils;
 import com.google.android.material.card.MaterialCardView;
 
+import java.util.List;
 import java.util.Locale;
 
 public class DashboardFragment extends Fragment {
 
-    private TextView tvBudgetStatus, tvTotalBalance, tvIncome, tvExpense, btnDashboardPeriod;
+    private TextView tvHeaderGreetingName, tvBudgetStatus, tvTotalBalance, tvIncome, tvExpense, btnDashboardPeriod;
     private ProgressBar budgetProgressBar;
-    private TextView tvBalance1, tvBalance2, tvBalance3;
+    private LinearLayout layoutAccountsContainer;
 
     @Nullable
     @Override
@@ -39,69 +46,16 @@ public class DashboardFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
+        tvHeaderGreetingName = view.findViewById(R.id.tvHeaderGreetingName);
         tvTotalBalance = view.findViewById(R.id.tvTotalBalance);
         tvIncome = view.findViewById(R.id.tvIncome);
         tvExpense = view.findViewById(R.id.tvExpense);
         tvBudgetStatus = view.findViewById(R.id.tvBudgetStatus);
         budgetProgressBar = view.findViewById(R.id.budgetProgressBar);
         btnDashboardPeriod = view.findViewById(R.id.btnDashboardPeriod);
+        layoutAccountsContainer = view.findViewById(R.id.layoutAccountsContainer);
 
-        View accountCard1 = view.findViewById(R.id.accountCard1);
-        View accountCard2 = view.findViewById(R.id.accountCard2);
-        View accountCard3 = view.findViewById(R.id.accountCard3);
-        View cardAddAccount = view.findViewById(R.id.cardAddAccount);
         MaterialCardView cardBudget = view.findViewById(R.id.cardBudget);
-
-        if (accountCard1 != null) {
-            tvBalance1 = accountCard1.findViewById(R.id.tvAccountBalance);
-            TextView tvName1 = accountCard1.findViewById(R.id.tvAccountName);
-            ImageView ivIcon1 = accountCard1.findViewById(R.id.ivAccountIcon);
-            tvName1.setText(R.string.account_hdfc);
-            if (ivIcon1 != null) ivIcon1.setImageResource(R.drawable.ic_bank);
-            accountCard1.setOnClickListener(v -> openEditAccount("HDFC Bank", "Savings Account", tvBalance1.getText().toString()));
-        }
-        if (accountCard2 != null) {
-            tvBalance2 = accountCard2.findViewById(R.id.tvAccountBalance);
-            TextView tvName2 = accountCard2.findViewById(R.id.tvAccountName);
-            TextView tvType2 = accountCard2.findViewById(R.id.tvAccountType);
-            View iconBg2 = accountCard2.findViewById(R.id.viewAccountIconBg);
-            ImageView ivIcon2 = accountCard2.findViewById(R.id.ivAccountIcon);
-
-            if (accountCard2 instanceof MaterialCardView) {
-                ((MaterialCardView) accountCard2).setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.pastel_green_bg));
-            }
-            if (iconBg2 != null) iconBg2.setBackgroundResource(R.drawable.bg_circle_green);
-            if (ivIcon2 != null) {
-                ivIcon2.setImageResource(R.drawable.ic_money);
-                ivIcon2.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.pastel_green_icon)));
-            }
-            tvName2.setText(R.string.account_cash);
-            if (tvType2 != null) tvType2.setText(R.string.account_type_wallet);
-            accountCard2.setOnClickListener(v -> openEditAccount("Cash", "Cash / Wallet", tvBalance2.getText().toString()));
-        }
-        if (accountCard3 != null) {
-            tvBalance3 = accountCard3.findViewById(R.id.tvAccountBalance);
-            TextView tvName3 = accountCard3.findViewById(R.id.tvAccountName);
-            TextView tvType3 = accountCard3.findViewById(R.id.tvAccountType);
-            View iconBg3 = accountCard3.findViewById(R.id.viewAccountIconBg);
-            ImageView ivIcon3 = accountCard3.findViewById(R.id.ivAccountIcon);
-
-            if (accountCard3 instanceof MaterialCardView) {
-                ((MaterialCardView) accountCard3).setCardBackgroundColor(ContextCompat.getColor(requireContext(), R.color.pastel_purple_bg));
-            }
-            if (iconBg3 != null) iconBg3.setBackgroundResource(R.drawable.bg_circle_purple);
-            if (ivIcon3 != null) {
-                ivIcon3.setImageResource(R.drawable.ic_credit_card);
-                ivIcon3.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), R.color.pastel_purple_icon)));
-            }
-            tvName3.setText(R.string.account_credit_card);
-            if (tvType3 != null) tvType3.setText(R.string.account_type_credit_card);
-            accountCard3.setOnClickListener(v -> openEditAccount("Credit Card", "Credit Card", tvBalance3.getText().toString()));
-        }
-
-        if (cardAddAccount != null) {
-            cardAddAccount.setOnClickListener(v -> openEditAccount("", "", ""));
-        }
 
         if (cardBudget != null) {
             cardBudget.setOnClickListener(v -> showEditBudgetDialog());
@@ -140,35 +94,111 @@ public class DashboardFragment extends Fragment {
         TransactionManager tm = TransactionManager.getInstance();
         BudgetManager bm = BudgetManager.getInstance();
 
-        if (tvTotalBalance != null) {
-            tvTotalBalance.setText(String.format(Locale.getDefault(), "₹%,.2f", tm.getTotalBalance()));
-        }
-        if (tvIncome != null) {
-            tvIncome.setText(String.format(Locale.getDefault(), "↑ +₹%,.2f", tm.getTotalIncome()));
-        }
-        if (tvExpense != null) {
-            tvExpense.setText(String.format(Locale.getDefault(), "↓ -₹%,.2f", tm.getTotalExpense()));
+        if (getContext() != null) {
+            android.content.SharedPreferences prefs = requireActivity().getSharedPreferences("BudgetPrefs", android.content.Context.MODE_PRIVATE);
+            String savedName = prefs.getString("user_name", "Nishant");
+            if (tvHeaderGreetingName != null) {
+                tvHeaderGreetingName.setText(savedName + " 👋");
+            }
         }
 
-        if (tvBalance1 != null) {
-            tvBalance1.setText(String.format(Locale.getDefault(), "₹%,.2f", tm.getAccountBalance("HDFC Bank")));
+        if (tvTotalBalance != null) {
+            tvTotalBalance.setText(CurrencyUtils.formatRupee(tm.getTotalBalance()));
         }
-        if (tvBalance2 != null) {
-            tvBalance2.setText(String.format(Locale.getDefault(), "₹%,.2f", tm.getAccountBalance("Cash")));
+        if (tvIncome != null) {
+            tvIncome.setText("↑ +" + CurrencyUtils.formatRupee(tm.getTotalIncome()));
         }
-        if (tvBalance3 != null) {
-            tvBalance3.setText(String.format(Locale.getDefault(), "₹%,.2f", tm.getAccountBalance("Credit Card")));
+        if (tvExpense != null) {
+            tvExpense.setText("↓ -" + CurrencyUtils.formatRupee(tm.getTotalExpense()));
         }
+
+        // Render Accounts Dynamically from Database
+        renderAccountsDynamically();
 
         double spent = tm.getTotalExpense();
         double limit = bm.getOverallLimit();
         int progress = limit > 0 ? (int) ((spent / limit) * 100) : 0;
         if (tvBudgetStatus != null) {
-            tvBudgetStatus.setText(String.format(Locale.getDefault(), "Spent ₹%,.0f of ₹%,.0f (%d%%)", spent, limit, progress));
+            tvBudgetStatus.setText(String.format(Locale.getDefault(), "Spent %s of %s (%d%%)",
+                    CurrencyUtils.formatRupeeNoDecimals(spent), CurrencyUtils.formatRupeeNoDecimals(limit), progress));
         }
         if (budgetProgressBar != null) {
             budgetProgressBar.setProgress(Math.min(progress, 100));
         }
+    }
+
+    private void renderAccountsDynamically() {
+        if (layoutAccountsContainer == null || getContext() == null) return;
+        layoutAccountsContainer.removeAllViews();
+
+        List<Account> accounts = AppDatabaseHelper.getInstance(requireContext()).getAllAccounts();
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+
+        int[] bgColors = {
+                R.color.pastel_blue_bg,
+                R.color.pastel_green_bg,
+                R.color.pastel_purple_bg,
+                R.color.pastel_orange_bg
+        };
+        int[] circleBgs = {
+                R.drawable.bg_circle_blue,
+                R.drawable.bg_circle_green,
+                R.drawable.bg_circle_purple,
+                R.drawable.bg_circle_orange
+        };
+        int[] iconColors = {
+                R.color.pastel_blue_icon,
+                R.color.pastel_green_icon,
+                R.color.pastel_purple_icon,
+                R.color.pastel_orange_icon
+        };
+        int[] iconDrawables = {
+                R.drawable.ic_bank,
+                R.drawable.ic_money,
+                R.drawable.ic_credit_card,
+                R.drawable.ic_money
+        };
+
+        for (int i = 0; i < accounts.size(); i++) {
+            Account account = accounts.get(i);
+            View cardView = inflater.inflate(R.layout.item_account_card, layoutAccountsContainer, false);
+
+            int colorIdx = i % bgColors.length;
+
+            if (cardView instanceof MaterialCardView) {
+                ((MaterialCardView) cardView).setCardBackgroundColor(ContextCompat.getColor(requireContext(), bgColors[colorIdx]));
+            }
+
+            TextView tvName = cardView.findViewById(R.id.tvAccountName);
+            TextView tvType = cardView.findViewById(R.id.tvAccountType);
+            TextView tvBalance = cardView.findViewById(R.id.tvAccountBalance);
+            FrameLayout viewIconBg = cardView.findViewById(R.id.viewAccountIconBg);
+            ImageView ivIcon = cardView.findViewById(R.id.ivAccountIcon);
+
+            if (tvName != null) tvName.setText(account.getName());
+            if (tvType != null) tvType.setText(account.getType());
+
+            double balance = TransactionManager.getInstance().getAccountBalance(account.getName());
+            if (tvBalance != null) {
+                tvBalance.setText(CurrencyUtils.formatRupee(balance));
+            }
+
+            if (viewIconBg != null) {
+                viewIconBg.setBackgroundResource(circleBgs[colorIdx]);
+            }
+            if (ivIcon != null) {
+                ivIcon.setImageResource(iconDrawables[colorIdx]);
+                ivIcon.setImageTintList(ColorStateList.valueOf(ContextCompat.getColor(requireContext(), iconColors[colorIdx])));
+            }
+
+            cardView.setOnClickListener(v -> openEditAccount(account.getName(), account.getType(), String.format(Locale.getDefault(), "%.2f", balance)));
+            layoutAccountsContainer.addView(cardView);
+        }
+
+        // Add "Add Account" Card
+        View addCardView = inflater.inflate(R.layout.item_add_account_card, layoutAccountsContainer, false);
+        addCardView.setOnClickListener(v -> openEditAccount("", "", ""));
+        layoutAccountsContainer.addView(addCardView);
     }
 
     private void showPeriodSelectorDialog(TextView targetTextView) {

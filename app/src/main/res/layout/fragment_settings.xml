@@ -212,6 +212,21 @@
                     android:text="Import Data from Backup"
                     android:textColor="@color/text_secondary" />
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="8dp"
+                    android:background="@color/divider_color" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnClearAllData"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start|center_vertical"
+                    android:text="Clear All App Data"
+                    android:textColor="#EF4444" />
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

@@ -18,8 +18,10 @@ import androidx.fragment.app.Fragment;
 import com.example.budgettracker.R;
 import com.example.budgettracker.data.TransactionManager;
 import com.example.budgettracker.model.Transaction;
+import com.example.budgettracker.utils.CurrencyUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -32,6 +34,7 @@ public class StatisticsFragment extends Fragment {
     private View barIncome, barExpense;
     private DonutChartView donutChartView;
     private LineChartView lineChartView;
+    private Spinner spinnerDateRange;
 
     @Nullable
     @Override
@@ -39,7 +42,7 @@ public class StatisticsFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_statistics, container, false);
 
-        Spinner spinnerDateRange = view.findViewById(R.id.spinnerDateRange);
+        spinnerDateRange = view.findViewById(R.id.spinnerDateRange);
         tvStatIncome = view.findViewById(R.id.tvStatIncome);
         tvStatExpense = view.findViewById(R.id.tvStatExpense);
         tvStatNet = view.findViewById(R.id.tvStatNet);
@@ -78,14 +81,20 @@ public class StatisticsFragment extends Fragment {
     }
 
     private void updateStatisticsData() {
-        List<Transaction> allTransactions = TransactionManager.getInstance().getTransactions();
+        String selectedRange = "All Time";
+        if (spinnerDateRange != null && spinnerDateRange.getSelectedItem() != null) {
+            selectedRange = spinnerDateRange.getSelectedItem().toString();
+        }
+
+        List<Transaction> transactions = TransactionManager.getInstance().getTransactionsForDateRange(selectedRange);
 
         double incomeSum = 0;
         double expenseSum = 0;
         Map<String, Double> categoryExpenses = new HashMap<>();
         List<Double> trendList = new ArrayList<>();
 
-        for (Transaction t : allTransactions) {
+        // Loop over transactions for range
+        for (Transaction t : transactions) {
             if (t.isIncome()) {
                 incomeSum += t.getAmount();
             } else {
@@ -100,33 +109,37 @@ public class StatisticsFragment extends Fragment {
             }
         }
 
+        // Reverse trend list so chronological order goes left to right
+        Collections.reverse(trendList);
+
         double net = incomeSum - expenseSum;
 
-        if (tvStatIncome != null) tvStatIncome.setText(String.format(Locale.getDefault(), "+₹%,.2f", incomeSum));
-        if (tvStatExpense != null) tvStatExpense.setText(String.format(Locale.getDefault(), "-₹%,.2f", expenseSum));
+        if (tvStatIncome != null) tvStatIncome.setText("+" + CurrencyUtils.formatRupee(incomeSum));
+        if (tvStatExpense != null) tvStatExpense.setText("-" + CurrencyUtils.formatRupee(expenseSum));
         if (tvStatNet != null) {
-            tvStatNet.setText(String.format(Locale.getDefault(), "₹%,.2f", net));
+            tvStatNet.setText(CurrencyUtils.formatRupee(net));
             tvStatNet.setTextColor(net >= 0 ? 0xFF34D399 : 0xFFF87171);
         }
 
-        if (tvIncomeBarVal != null) tvIncomeBarVal.setText(String.format(Locale.getDefault(), "₹%,.0f", incomeSum));
-        if (tvExpenseBarVal != null) tvExpenseBarVal.setText(String.format(Locale.getDefault(), "₹%,.0f", expenseSum));
+        if (tvIncomeBarVal != null) tvIncomeBarVal.setText(CurrencyUtils.formatRupeeNoDecimals(incomeSum));
+        if (tvExpenseBarVal != null) tvExpenseBarVal.setText(CurrencyUtils.formatRupeeNoDecimals(expenseSum));
 
         double maxVal = Math.max(incomeSum, expenseSum);
         if (maxVal > 0) {
+            float density = getResources().getDisplayMetrics().density;
             if (barIncome != null) {
                 ViewGroup.LayoutParams lp = barIncome.getLayoutParams();
-                lp.height = (int) Math.max(30, (incomeSum / maxVal) * 160 * getResources().getDisplayMetrics().density);
+                lp.height = (int) Math.max(30, (incomeSum / maxVal) * 160 * density);
                 barIncome.setLayoutParams(lp);
             }
             if (barExpense != null) {
                 ViewGroup.LayoutParams lp = barExpense.getLayoutParams();
-                lp.height = (int) Math.max(30, (expenseSum / maxVal) * 160 * getResources().getDisplayMetrics().density);
+                lp.height = (int) Math.max(30, (expenseSum / maxVal) * 160 * density);
                 barExpense.setLayoutParams(lp);
             }
         }
 
-        // Update Pie Chart & Slice Click Listener
+        // Update Pie/Donut Chart & Slice Click Listener
         if (donutChartView != null) {
             donutChartView.setData(categoryExpenses);
             donutChartView.setOnSliceClickListener(this::showCategoryTransactionsDialog);
@@ -145,10 +158,10 @@ public class StatisticsFragment extends Fragment {
                 double percentage = expenseSum > 0 ? (amt / expenseSum) * 100 : 0;
 
                 TextView tv = new TextView(getContext());
-                tv.setText(String.format(Locale.getDefault(), "• %s: ₹%,.2f (%.1f%%)", cat, amt, percentage));
+                tv.setText(String.format(Locale.getDefault(), "• %s: %s (%.1f%%)", cat, CurrencyUtils.formatRupee(amt), percentage));
                 tv.setTextColor(getResources().getColor(R.color.text_primary, null));
                 tv.setTextSize(14f);
-                tv.setPadding(0, 8, 0, 8);
+                tv.setPadding(0, 12, 0, 12);
                 tv.setClickable(true);
                 tv.setFocusable(true);
                 tv.setBackgroundResource(android.R.drawable.list_selector_background);
@@ -159,19 +172,25 @@ public class StatisticsFragment extends Fragment {
             }
             if (categoryExpenses.isEmpty()) {
                 TextView tv = new TextView(getContext());
-                tv.setText("No expense records found.");
+                tv.setText("No expense records found for selected period.");
                 tv.setTextColor(getResources().getColor(R.color.text_secondary, null));
+                tv.setPadding(0, 12, 0, 12);
                 layoutCategoryBreakdown.addView(tv);
             }
         }
     }
 
     private void showCategoryTransactionsDialog(String categoryName) {
-        List<Transaction> all = TransactionManager.getInstance().getTransactions();
+        String selectedRange = "All Time";
+        if (spinnerDateRange != null && spinnerDateRange.getSelectedItem() != null) {
+            selectedRange = spinnerDateRange.getSelectedItem().toString();
+        }
+
+        List<Transaction> all = TransactionManager.getInstance().getTransactionsForDateRange(selectedRange);
         List<String> matched = new ArrayList<>();
         for (Transaction t : all) {
             if (!t.isIncome() && t.getCategory().equalsIgnoreCase(categoryName)) {
-                matched.add(t.getTitle() + " - ₹" + String.format(Locale.getDefault(), "%,.2f", t.getAmount()) + " (" + t.getDate() + ")");
+                matched.add(t.getTitle() + " - " + CurrencyUtils.formatRupee(t.getAmount()) + " (" + t.getDate() + ")");
             }
         }
 

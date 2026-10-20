@@ -24,15 +24,6 @@
             android:textStyle="bold" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDemoListView"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ListView Demo"
-            android:textColor="@color/text_secondary"
-            android:textSize="12sp" />
-
-        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnAddTransactionAction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

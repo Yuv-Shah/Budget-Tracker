@@ -1,21 +1,15 @@
 package com.example.budgettracker.data;
 
+import com.example.budgettracker.BudgetTrackerApp;
 import com.example.budgettracker.model.Transaction;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class TransactionManager {
     private static TransactionManager instance;
-    private final List<Transaction> transactions;
 
     private TransactionManager() {
-        transactions = new ArrayList<>();
-        transactions.add(new Transaction("Grocery Shopping", "Food", "HDFC Bank", 1250.0, false, "Today, 2:30 PM"));
-        transactions.add(new Transaction("Monthly Salary", "Income", "Savings", 55000.0, true, "Yesterday"));
-        transactions.add(new Transaction("Electricity Bill", "Utilities", "Credit Card", 2400.0, false, "3 days ago"));
-        transactions.add(new Transaction("Fuel / Petrol", "Transport", "Cash", 800.0, false, "4 days ago"));
-        transactions.add(new Transaction("Restaurant Dining", "Food", "Credit Card", 1500.0, false, "5 days ago"));
     }
 
     public static synchronized TransactionManager getInstance() {
@@ -25,48 +19,63 @@ public class TransactionManager {
         return instance;
     }
 
+    private AppDatabaseHelper getDb() {
+        return AppDatabaseHelper.getInstance(BudgetTrackerApp.getContext());
+    }
+
     public List<Transaction> getTransactions() {
-        return transactions;
+        return getDb().getAllTransactions();
+    }
+
+    public List<Transaction> getTransactionsForDateRange(String dateRange) {
+        return getDb().getTransactionsForDateRange(dateRange);
     }
 
     public void addTransaction(Transaction transaction) {
-        transactions.add(0, transaction);
+        getDb().insertTransaction(transaction);
+    }
+
+    public boolean addOrUpdateTransactionFromCsv(Transaction transaction) {
+        return getDb().insertOrUpdateTransactionFromCsv(transaction);
+    }
+
+    public void deleteAllTransactions() {
+        getDb().deleteAllTransactions();
+    }
+
+    public boolean deleteTransaction(long id) {
+        return getDb().deleteTransaction(id);
     }
 
     public double getTotalIncome() {
-        return transactions.stream()
-                .filter(Transaction::isIncome)
-                .mapToDouble(Transaction::getAmount)
-                .sum();
+        return getDb().getTotalIncome("All Time");
+    }
+
+    public double getTotalIncome(String dateRange) {
+        return getDb().getTotalIncome(dateRange);
     }
 
     public double getTotalExpense() {
-        return transactions.stream()
-                .filter(t -> !t.isIncome())
-                .mapToDouble(Transaction::getAmount)
-                .sum();
+        return getDb().getTotalExpense("All Time");
+    }
+
+    public double getTotalExpense(String dateRange) {
+        return getDb().getTotalExpense(dateRange);
     }
 
     public double getTotalBalance() {
-        return getTotalIncome() - getTotalExpense();
+        return getDb().getTotalBalance();
     }
 
     public double getCategoryExpense(String category) {
-        return transactions.stream()
-                .filter(t -> !t.isIncome() && t.getCategory().equalsIgnoreCase(category))
-                .mapToDouble(Transaction::getAmount)
-                .sum();
+        return getDb().getCategoryExpense(category);
+    }
+
+    public Map<String, Double> getCategoryExpenses(String dateRange) {
+        return getDb().getCategoryExpenses(dateRange);
     }
 
     public double getAccountBalance(String accountName) {
-        double income = transactions.stream()
-                .filter(t -> t.getAccountName().equalsIgnoreCase(accountName) && t.isIncome())
-                .mapToDouble(Transaction::getAmount)
-                .sum();
-        double expense = transactions.stream()
-                .filter(t -> t.getAccountName().equalsIgnoreCase(accountName) && !t.isIncome())
-                .mapToDouble(Transaction::getAmount)
-                .sum();
-        return 10000.0 + income - expense;
+        return getDb().getAccountBalance(accountName);
     }
 }

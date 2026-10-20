@@ -8,6 +8,9 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+
+import com.example.budgettracker.R;
 
 import java.util.List;
 
@@ -44,7 +47,6 @@ public class LineChartView extends View {
         textPaint.setColor(0xFF64748B);
         textPaint.setTextSize(26f);
 
-        gridPaint.setColor(0xFFE2E8F0);
         gridPaint.setStrokeWidth(2f);
         gridPaint.setStyle(Paint.Style.STROKE);
     }
@@ -57,6 +59,17 @@ public class LineChartView extends View {
     @Override
     protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
+
+        int accentColor = ContextCompat.getColor(getContext(), R.color.income_green);
+        int textColor = ContextCompat.getColor(getContext(), R.color.text_secondary);
+        int gridColor = ContextCompat.getColor(getContext(), R.color.divider_color);
+
+        linePaint.setColor(accentColor);
+        fillPaint.setColor((accentColor & 0x00FFFFFF) | 0x33000000);
+        pointPaint.setColor(accentColor);
+        textPaint.setColor(textColor);
+        gridPaint.setColor(gridColor);
+
         if (trendValues == null || trendValues.isEmpty()) {
             textPaint.setTextAlign(Paint.Align.CENTER);
             canvas.drawText("No trend data available", getWidth() / 2f, getHeight() / 2f, textPaint);
