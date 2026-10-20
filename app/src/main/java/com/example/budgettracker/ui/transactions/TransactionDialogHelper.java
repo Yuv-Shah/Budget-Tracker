@@ -15,11 +15,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.budgettracker.R;
+import com.example.budgettracker.data.AppDatabaseHelper;
 import com.example.budgettracker.data.TransactionManager;
+import com.example.budgettracker.model.Account;
 import com.example.budgettracker.model.Transaction;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 public class TransactionDialogHelper {
@@ -34,7 +38,7 @@ public class TransactionDialogHelper {
             "Miscellaneous"
     };
 
-    public static final String[] ACCOUNTS = {
+    public static final String[] DEFAULT_ACCOUNTS = {
             "HDFC Bank",
             "Cash",
             "Credit Card"
@@ -99,8 +103,20 @@ public class TransactionDialogHelper {
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategory.setAdapter(categoryAdapter);
 
+        // Load account list dynamically from Database
+        List<Account> accountList = AppDatabaseHelper.getInstance(context).getAllAccounts();
+        List<String> accountNames = new ArrayList<>();
+        for (Account a : accountList) {
+            accountNames.add(a.getName());
+        }
+        if (accountNames.isEmpty()) {
+            for (String defAcc : DEFAULT_ACCOUNTS) {
+                accountNames.add(defAcc);
+            }
+        }
+
         ArrayAdapter<String> accountAdapter = new ArrayAdapter<>(
-                context, android.R.layout.simple_spinner_item, ACCOUNTS
+                context, android.R.layout.simple_spinner_item, accountNames
         );
         accountAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerAccount.setAdapter(accountAdapter);
@@ -145,6 +161,10 @@ public class TransactionDialogHelper {
         });
 
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-        builder.show();
+        AlertDialog dialog = builder.create();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(R.drawable.bg_rounded_dialog);
+        }
+        dialog.show();
     }
 }

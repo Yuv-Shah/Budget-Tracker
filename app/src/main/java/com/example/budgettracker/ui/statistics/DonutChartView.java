@@ -9,15 +9,21 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+
+import com.example.budgettracker.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class DonutChartView extends View {
     private Map<String, Double> categoryData;
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint innerHolePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint titlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF rectF = new RectF();
 
     private final List<SliceInfo> sliceInfos = new ArrayList<>();
@@ -28,7 +34,7 @@ public class DonutChartView extends View {
     }
 
     private static final int[] COLORS = {
-        0xFF7C3AED, 0xFF2563EB, 0xFF059669, 0xFFEA580C, 0xFFEF4444, 0xFFCA8A04, 0xFF0E3A2F
+        0xFF7C3AED, 0xFF2563EB, 0xFF059669, 0xFFEA580C, 0xFFEF4444, 0xFFCA8A04, 0xFF0E3A2F, 0xFFEC4899
     };
 
     private static class SliceInfo {
@@ -54,8 +60,12 @@ public class DonutChartView extends View {
     }
 
     private void init() {
-        textPaint.setColor(0xFF94A3B8);
-        textPaint.setTextSize(24f);
+        innerHolePaint.setStyle(Paint.Style.FILL);
+
+        titlePaint.setTextSize(22f);
+        titlePaint.setTextAlign(Paint.Align.CENTER);
+
+        textPaint.setTextSize(28f);
         textPaint.setTextAlign(Paint.Align.CENTER);
         textPaint.setFakeBoldText(true);
     }
@@ -74,14 +84,23 @@ public class DonutChartView extends View {
         super.onDraw(canvas);
         sliceInfos.clear();
 
+        int cardSurfaceColor = ContextCompat.getColor(getContext(), R.color.card_surface);
+        int textPrimaryColor = ContextCompat.getColor(getContext(), R.color.text_primary);
+        int textSecondaryColor = ContextCompat.getColor(getContext(), R.color.text_secondary);
+
+        innerHolePaint.setColor(cardSurfaceColor);
+        titlePaint.setColor(textSecondaryColor);
+        textPaint.setColor(textPrimaryColor);
+
+        int width = getWidth();
+        int height = getHeight();
+
         if (categoryData == null || categoryData.isEmpty()) {
-            paint.setColor(0xFF94A3B8);
+            paint.setColor(0xFF334155);
             paint.setStyle(Paint.Style.FILL);
-            int width = getWidth();
-            int height = getHeight();
             float radius = Math.min(width, height) / 2f - 30f;
             canvas.drawCircle(width / 2f, height / 2f, radius, paint);
-            paint.setColor(0xFFFFFFFF);
+            canvas.drawCircle(width / 2f, height / 2f, radius * 0.55f, innerHolePaint);
             canvas.drawText("No Data", width / 2f, height / 2f + 8f, textPaint);
             return;
         }
@@ -90,10 +109,16 @@ public class DonutChartView extends View {
         for (double val : categoryData.values()) {
             total += val;
         }
-        if (total <= 0) return;
+        if (total <= 0) {
+            paint.setColor(0xFF334155);
+            paint.setStyle(Paint.Style.FILL);
+            float radius = Math.min(width, height) / 2f - 30f;
+            canvas.drawCircle(width / 2f, height / 2f, radius, paint);
+            canvas.drawCircle(width / 2f, height / 2f, radius * 0.55f, innerHolePaint);
+            canvas.drawText("₹0.00", width / 2f, height / 2f + 8f, textPaint);
+            return;
+        }
 
-        int width = getWidth();
-        int height = getHeight();
         float padding = 20f;
         float diameter = Math.min(width, height) - (padding * 2);
         rectF.set(
@@ -103,7 +128,7 @@ public class DonutChartView extends View {
             (height + diameter) / 2f
         );
 
-        float startAngle = 0f;
+        float startAngle = -90f; // Start from top
         int colorIndex = 0;
 
         paint.setStyle(Paint.Style.FILL);
@@ -112,7 +137,7 @@ public class DonutChartView extends View {
             float sweepAngle = (float) ((entry.getValue() / total) * 360f);
             paint.setColor(COLORS[colorIndex % COLORS.length]);
             
-            // Draw solid pie slice
+            // Draw pie slice
             canvas.drawArc(rectF, startAngle, sweepAngle, true, paint);
             
             // Store slice info for touch hit testing
@@ -121,6 +146,15 @@ public class DonutChartView extends View {
             startAngle += sweepAngle;
             colorIndex++;
         }
+
+        // Draw inner hole for Donut Chart
+        float outerRadius = diameter / 2f;
+        float innerRadius = outerRadius * 0.58f;
+        canvas.drawCircle(width / 2f, height / 2f, innerRadius, innerHolePaint);
+
+        // Draw total text in center
+        canvas.drawText("TOTAL EXPENSE", width / 2f, height / 2f - 12f, titlePaint);
+        canvas.drawText(String.format(Locale.getDefault(), "₹%,.0f", total), width / 2f, height / 2f + 22f, textPaint);
     }
 
     @Override
@@ -146,14 +180,17 @@ public class DonutChartView extends View {
                 }
 
                 for (SliceInfo slice : sliceInfos) {
-                    float endAngle = slice.startAngle + slice.sweepAngle;
-                    if (slice.startAngle <= endAngle) {
-                        if (angle >= slice.startAngle && angle <= endAngle) {
+                    float normStart = slice.startAngle;
+                    while (normStart < 0) normStart += 360;
+                    float normEnd = normStart + slice.sweepAngle;
+
+                    if (normStart <= normEnd) {
+                        if (angle >= normStart && angle <= normEnd) {
                             sliceClickListener.onSliceClick(slice.category);
                             break;
                         }
                     } else {
-                        if (angle >= slice.startAngle || angle <= endAngle) {
+                        if (angle >= normStart || angle <= normEnd) {
                             sliceClickListener.onSliceClick(slice.category);
                             break;
                         }

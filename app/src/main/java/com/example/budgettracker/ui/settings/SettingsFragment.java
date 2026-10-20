@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +17,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
@@ -26,6 +26,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.budgettracker.ProfileActivity;
 import com.example.budgettracker.R;
+import com.example.budgettracker.data.AppDatabaseHelper;
 import com.example.budgettracker.data.TransactionManager;
 import com.example.budgettracker.model.Transaction;
 import com.google.android.material.button.MaterialButton;
@@ -33,16 +34,16 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.concurrent.Executor;
 
 public class SettingsFragment extends Fragment {
 
     private SharedPreferences prefs;
-    private ActivityResultLauncher<Intent> filePickerLauncher;
+    private ActivityResultLauncher<String> csvExportLauncher;
+    private ActivityResultLauncher<String[]> csvImportLauncher;
 
     @Nullable
     @Override
@@ -111,25 +112,59 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        btnExportCsv.setOnClickListener(v -> exportCsvData());
+        // Register Storage Access Framework (SAF) Launchers for CSV Export & Import
+        csvExportLauncher = registerForActivityResult(
+                new ActivityResultContracts.CreateDocument("text/csv"),
+                uri -> {
+                    if (uri != null) {
+                        writeCsvToUri(uri);
+                    }
+                }
+        );
 
-        filePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                        Uri uri = result.getData().getData();
+        csvImportLauncher = registerForActivityResult(
+                new ActivityResultContracts.OpenDocument(),
+                uri -> {
+                    if (uri != null) {
                         importCsvData(uri);
                     }
                 }
         );
 
-        btnImportCsv.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-            intent.setType("text/*");
-            filePickerLauncher.launch(intent);
+        btnExportCsv.setOnClickListener(v -> {
+            String defaultFileName = "budget_tracker_export_" + System.currentTimeMillis() + ".csv";
+            csvExportLauncher.launch(defaultFileName);
         });
 
+        btnImportCsv.setOnClickListener(v -> {
+            csvImportLauncher.launch(new String[]{
+                    "text/csv",
+                    "text/comma-separated-values",
+                    "application/csv",
+                    "text/plain",
+                    "*/*"
+            });
+        });
+
+        MaterialButton btnClearAllData = view.findViewById(R.id.btnClearAllData);
+        if (btnClearAllData != null) {
+            btnClearAllData.setOnClickListener(v -> showClearDataConfirmationDialog());
+        }
+
         return view;
+    }
+
+    private void showClearDataConfirmationDialog() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Clear All App Data")
+                .setMessage("Are you sure you want to delete all transactions, accounts, budgets, and user settings? This action cannot be undone.")
+                .setPositiveButton("Clear All", (dialog, which) -> {
+                    AppDatabaseHelper.getInstance(requireContext()).clearAllData();
+                    prefs.edit().clear().apply();
+                    Toast.makeText(getContext(), "All app data cleared successfully!", Toast.LENGTH_LONG).show();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private void promptBiometricForSetup(SwitchMaterial switchAppLock) {
@@ -170,9 +205,9 @@ public class SettingsFragment extends Fragment {
         }
     }
 
-    private void exportCsvData() {
-        StringBuilder sb = new StringBuilder();
+    private void writeCsvToUri(Uri uri) {
         try {
+            StringBuilder sb = new StringBuilder();
             sb.append("type,amount,title,category,account,date\n");
             for (Transaction t : TransactionManager.getInstance().getTransactions()) {
                 sb.append(t.isIncome() ? "INCOME" : "EXPENSE").append(",")
@@ -183,41 +218,30 @@ public class SettingsFragment extends Fragment {
                   .append("\"").append(t.getDate()).append("\"\n");
             }
 
-            File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-            if (!downloadsDir.exists()) {
-                //noinspection ResultOfMethodCallIgnored
-                downloadsDir.mkdirs();
+            OutputStream outputStream = requireContext().getContentResolver().openOutputStream(uri);
+            if (outputStream != null) {
+                outputStream.write(sb.toString().getBytes());
+                outputStream.close();
+                Toast.makeText(getContext(), "CSV exported successfully to chosen location!", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(getContext(), "Failed to open export file destination.", Toast.LENGTH_SHORT).show();
             }
-            File file = new File(downloadsDir, "budget_tracker_export_" + System.currentTimeMillis() + ".csv");
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.write(sb.toString().getBytes());
-            fos.close();
-
-            Toast.makeText(getContext(), "CSV saved to Downloads: " + file.getName(), Toast.LENGTH_LONG).show();
         } catch (Exception e) {
-            try {
-                File docsDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-                if (docsDir != null && !docsDir.exists()) {
-                    //noinspection ResultOfMethodCallIgnored
-                    docsDir.mkdirs();
-                }
-                File file = new File(docsDir, "budget_tracker_export_" + System.currentTimeMillis() + ".csv");
-                FileOutputStream fos = new FileOutputStream(file);
-                fos.write(sb.toString().getBytes());
-                fos.close();
-                Toast.makeText(getContext(), "CSV saved to App Documents: " + file.getName(), Toast.LENGTH_LONG).show();
-            } catch (Exception ex) {
-                Toast.makeText(getContext(), "Export failed: " + ex.getMessage(), Toast.LENGTH_SHORT).show();
-            }
+            Toast.makeText(getContext(), "Export failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 
     private void importCsvData(Uri uri) {
         try {
             InputStream inputStream = requireContext().getContentResolver().openInputStream(uri);
+            if (inputStream == null) {
+                Toast.makeText(getContext(), "Unable to read imported file.", Toast.LENGTH_SHORT).show();
+                return;
+            }
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             String fileLine;
-            int count = 0;
+            int newlyAdded = 0;
+            int existingUpdated = 0;
             boolean isFirstLine = true;
             while ((fileLine = reader.readLine()) != null) {
                 if (isFirstLine) {
@@ -234,12 +258,16 @@ public class SettingsFragment extends Fragment {
                     String date = parts[5].replace("\"", "");
 
                     Transaction t = new Transaction(title, category, account, amount, isIncome, date);
-                    TransactionManager.getInstance().addTransaction(t);
-                    count++;
+                    boolean isNew = TransactionManager.getInstance().addOrUpdateTransactionFromCsv(t);
+                    if (isNew) {
+                        newlyAdded++;
+                    } else {
+                        existingUpdated++;
+                    }
                 }
             }
             reader.close();
-            Toast.makeText(getContext(), "Successfully imported " + count + " transactions!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Import complete: " + newlyAdded + " new added, " + existingUpdated + " existing updated/overwritten!", Toast.LENGTH_LONG).show();
         } catch (Exception e) {
             Toast.makeText(getContext(), "Import failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
         }

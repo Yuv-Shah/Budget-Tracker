@@ -40,6 +40,7 @@
                         android:textSize="13sp" />
 
                     <TextView
+                        android:id="@+id/tvHeaderGreetingName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Nishant 👋"
@@ -67,15 +68,14 @@
 
             </LinearLayout>
 
-            <!-- Total Balance Hero Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                app:cardCornerRadius="20dp"
+                app:cardCornerRadius="24dp"
                 app:cardElevation="0dp"
                 app:strokeWidth="0dp"
-                app:cardBackgroundColor="#092820">
+                app:cardBackgroundColor="@color/hero_card_bg">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -215,10 +215,10 @@
                         android:layout_width="165dp"
                         android:layout_height="80dp"
                         android:layout_marginEnd="12dp"
-                        app:cardCornerRadius="16dp"
+                        app:cardCornerRadius="20dp"
                         app:cardElevation="0dp"
                         app:strokeWidth="1dp"
-                        app:strokeColor="#DDD6FE"
+                        app:strokeColor="@color/divider_color"
                         app:cardBackgroundColor="@color/pastel_purple_bg"
                         android:clickable="true"
                         android:focusable="true">
@@ -276,10 +276,10 @@
                         android:layout_width="165dp"
                         android:layout_height="80dp"
                         android:layout_marginEnd="10dp"
-                        app:cardCornerRadius="16dp"
+                        app:cardCornerRadius="20dp"
                         app:cardElevation="0dp"
                         app:strokeWidth="1dp"
-                        app:strokeColor="#FED7AA"
+                        app:strokeColor="@color/divider_color"
                         app:cardBackgroundColor="@color/pastel_orange_bg"
                         android:clickable="true"
                         android:focusable="true">
@@ -359,29 +359,10 @@
                 android:scrollbars="none">
 
                 <LinearLayout
+                    android:id="@+id/layoutAccountsContainer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
-
-                    <!-- Account Card 1: HDFC Bank -->
-                    <include
-                        android:id="@+id/accountCard1"
-                        layout="@layout/item_account_card" />
-
-                    <!-- Account Card 2: Cash -->
-                    <include
-                        android:id="@+id/accountCard2"
-                        layout="@layout/item_account_card" />
-
-                    <!-- Account Card 3: Credit Card -->
-                    <include
-                        android:id="@+id/accountCard3"
-                        layout="@layout/item_account_card" />
-
-                    <!-- Add Account Card -->
-                    <include
-                        android:id="@+id/cardAddAccount"
-                        layout="@layout/item_add_account_card" />
 
                 </LinearLayout>
             </HorizontalScrollView>

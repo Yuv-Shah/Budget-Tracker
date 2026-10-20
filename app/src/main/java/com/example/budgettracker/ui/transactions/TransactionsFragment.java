@@ -9,8 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,10 +23,8 @@ import com.example.budgettracker.model.Transaction;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 public class TransactionsFragment extends Fragment {
 
@@ -96,11 +92,6 @@ public class TransactionsFragment extends Fragment {
                 })
         );
 
-        View btnDemoListView = view.findViewById(R.id.btnDemoListView);
-        if (btnDemoListView != null) {
-            btnDemoListView.setOnClickListener(v -> showListViewDemoDialog());
-        }
-
         filterTransactions();
 
         return view;
@@ -137,10 +128,10 @@ public class TransactionsFragment extends Fragment {
         builder.setTitle("Transaction Details");
 
         String details = String.format(Locale.getDefault(),
-                "Title: %s\nType: %s\nAmount: ₹%,.2f\nCategory: %s\nAccount: %s\nDate: %s",
+                "Title: %s\nType: %s\nAmount: %s\nCategory: %s\nAccount: %s\nDate: %s",
                 t.getTitle(),
                 t.isIncome() ? "Income" : "Expense",
-                t.getAmount(),
+                com.example.budgettracker.utils.CurrencyUtils.formatRupee(t.getAmount()),
                 t.getCategory(),
                 t.getAccountName(),
                 t.getDate());
@@ -153,7 +144,7 @@ public class TransactionsFragment extends Fragment {
                     .setTitle("Delete Transaction")
                     .setMessage("Are you sure you want to delete this transaction?")
                     .setPositiveButton("Yes", (d, w) -> {
-                        TransactionManager.getInstance().getTransactions().remove(t);
+                        TransactionManager.getInstance().deleteTransaction(t.getId());
                         filterTransactions();
                         Toast.makeText(getContext(), "Transaction deleted", Toast.LENGTH_SHORT).show();
                     })
@@ -161,33 +152,6 @@ public class TransactionsFragment extends Fragment {
                     .show();
         });
 
-        builder.show();
-    }
-
-    private void showListViewDemoDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Course Demo: ListView + SimpleAdapter");
-
-        ListView listView = new ListView(requireContext());
-        List<Map<String, String>> data = new ArrayList<>();
-        for (Transaction t : TransactionManager.getInstance().getTransactions()) {
-            Map<String, String> map = new HashMap<>();
-            map.put("title", t.getTitle() + " (" + t.getCategory() + ")");
-            map.put("subtitle", "₹" + t.getAmount() + " • " + t.getAccountName() + " • " + t.getDate());
-            data.add(map);
-        }
-
-        SimpleAdapter simpleAdapter = new SimpleAdapter(
-                requireContext(),
-                data,
-                android.R.layout.simple_list_item_2,
-                new String[]{"title", "subtitle"},
-                new int[]{android.R.id.text1, android.R.id.text2}
-        );
-        listView.setAdapter(simpleAdapter);
-        builder.setView(listView);
-
-        builder.setPositiveButton("Close", (dialog, which) -> dialog.dismiss());
         builder.show();
     }
 }

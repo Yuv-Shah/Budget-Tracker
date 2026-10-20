@@ -70,11 +70,11 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
 
         if (t.isIncome()) {
             holder.tvSubtitle.setText(String.format(Locale.getDefault(), "Income (%s) • %s", t.getAccountName(), t.getDate()));
-            holder.tvAmount.setText(String.format(Locale.getDefault(), "+₹%,.2f", t.getAmount()));
+            holder.tvAmount.setText("+ " + com.example.budgettracker.utils.CurrencyUtils.formatRupee(t.getAmount()));
             holder.tvAmount.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.income_green));
         } else {
             holder.tvSubtitle.setText(String.format(Locale.getDefault(), "%s • %s • %s", t.getCategory(), t.getAccountName(), t.getDate()));
-            holder.tvAmount.setText(String.format(Locale.getDefault(), "-₹%,.2f", t.getAmount()));
+            holder.tvAmount.setText("- " + com.example.budgettracker.utils.CurrencyUtils.formatRupee(t.getAmount()));
             holder.tvAmount.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.expense_red));
         }
 

@@ -2,9 +2,9 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <gradient
         android:angle="270"
-        android:endColor="#08241D"
-        android:startColor="#0E3A2F" />
+        android:startColor="@color/header_bg"
+        android:endColor="@color/hero_card_gradient_end" />
     <corners
-        android:bottomLeftRadius="24dp"
-        android:bottomRightRadius="24dp" />
+        android:bottomLeftRadius="28dp"
+        android:bottomRightRadius="28dp" />
 </shape>
